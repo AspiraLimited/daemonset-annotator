@@ -13,6 +13,8 @@ on:
     types:
       - ready_for_review
       - review_requested
+env:
+  DOCKER_REPOSITORY: aspira/daemonset-annotator
 jobs:
   build:
     name: Build docker image
@@ -23,16 +25,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REPOSITORY }}
+
       - name: Build and push Docker images
         uses: docker/build-push-action@v5
         with:
           push: true
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: aspira/daemonset-annotator
-          cache_froms: aspira/daemonset-annotator:latest
-          tag_with_ref: true
-          build_args: BUILDKIT_INLINE_CACHE=1
-          add_git_labels: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
         env:
           DOCKER_BUILDKIT: 1
