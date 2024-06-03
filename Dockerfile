@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine as build
+FROM golang:1.22-alpine as builder
 
 WORKDIR /build
 
@@ -9,7 +9,7 @@ RUN CGO_ENABLED=0 go build -o ./annotating-webhook
 
 FROM alpine:3.10
 
-COPY --from=build /build/annotating-webhook /usr/local/bin/annotating-webhook
+COPY --from=builder /build/annotating-webhook /usr/local/bin/annotating-webhook
 
 RUN chmod +x /usr/local/bin/annotating-webhook
 

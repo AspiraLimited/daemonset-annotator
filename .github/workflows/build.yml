@@ -1,0 +1,37 @@
+---
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+  pull_request:
+    branches:
+      - main
+    types:
+      - ready_for_review
+      - review_requested
+jobs:
+  build:
+    name: Build docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build and push Docker builder images
+        uses: docker/build-push-action@v5
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: aspira/daemonset-annotator
+          cache_froms: aspira/daemonset-annotator:latest
+          tag_with_ref: true
+          build_args: BUILDKIT_INLINE_CACHE=1
+          add_git_labels: true
+        env:
+          DOCKER_BUILDKIT: 1

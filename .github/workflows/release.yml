@@ -1,0 +1,38 @@
+---
+name: Release Charts
+
+on:
+  push:
+    paths:
+      - "**/Chart.yaml"
+
+jobs:
+  release:
+    name: Build and release helm package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Run chart-releaser
+        uses: aspiraLimited/chart-releaser-action@master
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          charts_dir: ./charts
+          debug: true
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+          repository: AspiraLimited/helm-charts
+          event-type: update_helm_repo
+          client-payload: '{"index_url": "https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/index.yaml"}'
