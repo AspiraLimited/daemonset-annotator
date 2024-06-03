@@ -23,9 +23,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build and push Docker builder images
+      - name: Build and push Docker images
         uses: docker/build-push-action@v5
         with:
+          push: true
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: aspira/daemonset-annotator
