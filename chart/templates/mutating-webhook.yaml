@@ -1,0 +1,27 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: {{ include "daemonset-annotator.fullname" . }}
+  annotations:
+    cert-manager.io/inject-ca-from: {{ printf "%s/%s" ( .Release.Namespace ) ( include "daemonset-annotator.fullname" . ) }}-tls
+webhooks:
+  - name: daemonset-annotating-webhook.{{ .Release.Namespace }}.svc
+    admissionReviewVersions:
+      - "v1"
+    failurePolicy: {{ .Values.webhookConfig.failurePolicy }}
+    sideEffects: "None"
+    timeoutSeconds: 30
+    namespaceSelector: {{ toYaml .Values.webhookConfig.namespaceSelector | nindent 6 }}
+    objectSelector: {{ toYaml .Values.webhookConfig.objectSelector | nindent 6 }}
+    clientConfig:
+      service:
+        name: {{ include "daemonset-annotator.fullname" . }}
+        namespace: {{ .Release.Namespace }}
+        path: "/mutate"
+        port: {{ .Values.service.port }}
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        resources: ["daemonsets"]
+

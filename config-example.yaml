@@ -1,0 +1,6 @@
+server:
+  port: 443
+  certificate: /etc/webhook/certs/tls.crt
+  key: /etc/webhook/certs/tls.key
+annotations:
+  cluster-autoscaler.kubernetes.io/enable-ds-eviction: "false"

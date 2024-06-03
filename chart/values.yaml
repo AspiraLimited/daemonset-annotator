@@ -1,0 +1,61 @@
+# Default values for daemonset-annotator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: aspira/daemonset-annotator
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 0.0.8
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 443
+
+resources:
+  limits:
+    cpu: 20m
+    memory: 64Mi
+  requests:
+    cpu: 20m
+    memory: 64Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+webhookConfig:
+  namespaceSelector: {}
+  objectSelector: {}
+  failurePolicy: Ignore
+
+config:
+  server:
+    port: 443
+    certificate: /etc/webhook/certs/tls.crt
+    key: /etc/webhook/certs/tls.key
+  annotations:
+    cluster-autoscaler.kubernetes.io/enable-ds-eviction: "false"

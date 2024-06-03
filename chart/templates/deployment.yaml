@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "daemonset-annotator.fullname" . }}
+  labels:
+    {{- include "daemonset-annotator.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "daemonset-annotator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "daemonset-annotator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: https
+              containerPort: {{ .Values.config.server.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: https
+              scheme: HTTPS
+          readinessProbe:
+            httpGet:
+              path: /
+              port: https
+              scheme: HTTPS
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: webhook-config
+              mountPath: /etc/webhook/config/
+              readOnly: true
+            - name: webhook-tls-certs
+              mountPath: /etc/webhook/certs/
+              readOnly: true
+
+      volumes:
+        - name: webhook-config
+          configMap:
+            name: {{ include "daemonset-annotator.fullname" . }}-config
+        - name: webhook-tls-certs
+          secret:
+            secretName: {{ include "daemonset-annotator.fullname" . }}-tls
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

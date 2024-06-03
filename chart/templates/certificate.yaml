@@ -1,0 +1,23 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  labels:
+    {{- include "daemonset-annotator.labels" . | nindent 4 }}
+  name: {{ include "daemonset-annotator.fullname" . }}-selfsigned
+spec:
+  selfSigned: {}
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    {{- include "daemonset-annotator.labels" . | nindent 4 }}
+  name: {{ include "daemonset-annotator.fullname" . }}-tls
+spec:
+  dnsNames:
+    - {{ printf "%s.%s.svc" ( include "daemonset-annotator.fullname" .) .Release.Namespace }}
+
+  issuerRef:
+    name: {{ include "daemonset-annotator.fullname" . }}-selfsigned
+  secretName: {{ include "daemonset-annotator.fullname" . }}-tls
