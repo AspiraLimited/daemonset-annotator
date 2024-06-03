@@ -2,6 +2,17 @@ apiVersion: v1
 entries:
   daemonset-annotator:
   - apiVersion: v2
+    appVersion: 1.0.2
+    created: "2024-06-03T12:10:58.042443797Z"
+    description: MutatingWebhookConfiguration for adding annotations to pods created
+      by DaemonSets
+    digest: 8140a06bdcc1745bdbcb31d97b112481a2f6cf355c2becc611bb09033d508548
+    name: daemonset-annotator
+    type: application
+    urls:
+    - https://github.com/AspiraLimited/daemonset-annotator/releases/download/daemonset-annotator-1.0.2/daemonset-annotator-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
     appVersion: 1.0.1
     created: "2024-06-03T11:47:27.279296103Z"
     description: A Helm chart for Kubernetes
