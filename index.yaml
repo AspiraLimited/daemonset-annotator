@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  daemonset-annotator:
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2024-06-03T11:47:27.279296103Z"
+    description: A Helm chart for Kubernetes
+    digest: 2aa3f103b7a4d9d11c8effb6e1f408855787c6ca52ff49e9e46f24f68109765d
+    name: daemonset-annotator
+    type: application
+    urls:
+    - https://github.com/AspiraLimited/daemonset-annotator/releases/download/daemonset-annotator-1.0.1/daemonset-annotator-1.0.1.tgz
+    version: 1.0.1
+generated: "2024-06-03T11:47:27.147177152Z"
